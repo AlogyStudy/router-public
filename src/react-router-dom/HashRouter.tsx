@@ -3,10 +3,10 @@ import { Provider } from './context'
 import { IStateLocation } from './state'
 
 export default class HashRouter extends Component<{}, IStateLocation> {
-  constructor (props: {}) {
+  public constructor (props: {}) {
     super(props)
     this.state = {
-      localtion: {
+      location: {
         pathname: window.location.hash.slice(1) || '/',
       }
     }
@@ -17,16 +17,16 @@ export default class HashRouter extends Component<{}, IStateLocation> {
     // 改变hash，修改pathname
     window.addEventListener('hashchange', () => {
       this.setState({
-        localtion: {
-          ...this.state.localtion,
+        location: {
+          ...this.state.location,
           pathname: window.location.hash.slice(1) || '/'
         }
       })
     })
   }
   public render () {
-    const value = {
-      location: this.state.localtion,
+    let value = {
+      location: this.state.location,
       history: {
         push (to: string) {
           window.location.hash = to

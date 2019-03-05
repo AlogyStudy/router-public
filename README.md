@@ -10,7 +10,6 @@
 
 根据路径的变化重新渲染组件。
 
-
 ## react-router-dom用法
 
 `react-router-dom`基本用法
@@ -88,11 +87,80 @@ public render () {
     return (
         <Consumer>
         {state => {
-            global.console.log(state, 'state')
+            console.log(state, 'state')
             return null
         }}
         </Consumer>
     )
+}
+```
+
+> 实现的组件
+
+```typescript
+export {
+  HashRouter, // 路由对象
+  Route, // 当前路由对象
+  Link, // a链接切换
+  Redirect, // 重定向
+  Switch // 匹配路由后不再匹配
+}
+```
+
+> 路由参数处理
+
+[path-to-regexp](https://www.npmjs.com/package/path-to-regexp)包，根据路径参数，返回匹配正则
+
+```typescript
+import React, { Component } from 'react'
+import { Consumer } from './context'
+import { IState } from './state'
+
+import pathToReg from 'path-to-regexp'
+
+interface IProps {
+  path: string
+  exact: boolean
+  component: any
+}
+
+export default class Route extends Component<IProps, {}> {
+  public constructor (props: IProps) {
+    super(props)
+  }
+  public render () {
+    return (
+      <Consumer>
+        {(state: IState) => {
+          // path 是route中传递的
+          let { path, component: Components, exact=false } = this.props
+          // pathname是浏览器中的location
+          let pathname = state.location.pathname
+          // 根据`path`实现一个正则，通过正则匹配
+          let keys: Array<any> = []
+          let reg = pathToReg(path, keys, {end: exact})
+          let result = pathname.match(reg)
+          keys = keys.map((item) => item.name)
+          let [url = '/', ...values] = result || []
+          let props = {
+            location: state.location,
+            history: state.history,
+            match: {
+              url,
+              params: keys.reduce((obj, current, index) => {
+                obj[current] = values[index]
+                return obj
+              }, {})
+            }
+          }
+          if (result) {
+            return <Components {...props} />
+          }
+          return null
+        }}
+      </Consumer>
+    )
+  }
 }
 ```
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Consumer } from './context'
-import { IStateLocation } from './state'
+import { IState } from './state'
 
 import pathToReg from 'path-to-regexp'
 
@@ -11,26 +11,36 @@ interface IProps {
 }
 
 export default class Route extends Component<IProps, {}> {
-  constructor (props: IProps) {
+  public constructor (props: IProps) {
     super(props)
   }
   public render () {
     return (
       <Consumer>
-        {(state: IStateLocation) => {
-          global.console.log(state.localtion, 'state.localtion')
-          if (state.localtion) {
-            global.console.log(123123)
-            // path 是route中传递的
-            const { path, component: Components, exact=false } = this.props
-            // pathname是浏览器中的location
-            const pathname = state.localtion.pathname
-            // 根据`path`实现一个正则，通过正则匹配
-            const reg = pathToReg(path, [], {end: exact})
-            const result = pathname.match(reg)
-            if (result) {
-              return <Components />
+        {(state: IState) => {
+          // path 是route中传递的
+          let { path, component: Components, exact=false } = this.props
+          // pathname是浏览器中的location
+          let pathname = state.location.pathname
+          // 根据`path`实现一个正则，通过正则匹配
+          let keys: Array<any> = []
+          let reg = pathToReg(path, keys, {end: exact})
+          let result = pathname.match(reg)
+          keys = keys.map((item) => item.name)
+          let [url = '/', ...values] = result || []
+          let props = {
+            location: state.location,
+            history: state.history,
+            match: {
+              url,
+              params: keys.reduce((obj, current, index) => {
+                obj[current] = values[index]
+                return obj
+              }, {})
             }
+          }
+          if (result) {
+            return <Components {...props} />
           }
           return null
         }}

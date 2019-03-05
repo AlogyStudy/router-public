@@ -6,7 +6,7 @@ interface IProps {
   to: string
 }
 
-export default class Link extends Component<IProps, {}> {
+export default class Redirect extends Component<IProps, {}> {
   public constructor (props: IProps) {
     super(props)
   }
@@ -14,9 +14,9 @@ export default class Link extends Component<IProps, {}> {
     return (
       <Consumer>
         {(state: IStateHistory) => {
-          return <a onClick={() => {
+            // 重定向，匹配不到后直接跳转redirect中的to路径
             state.history.push(this.props.to)
-          }} style={{cursor: 'pointer'}}>{this.props.children}</a>
+            return null
         }}
       </Consumer>
     )

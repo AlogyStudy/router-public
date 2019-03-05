@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 export default class Profile extends Component {
-  constructor (props: {}) {
+  public constructor (props: {}) {
     super(props)
   }
   public render () {

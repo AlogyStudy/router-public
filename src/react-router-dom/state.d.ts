@@ -1,6 +1,6 @@
 
 export interface IStateLocation {
-  localtion: {
+  location: {
     [key: string]: any
   }
 }
@@ -12,4 +12,10 @@ export interface IStateHistory {
   }
 }
 
-export interface IState extends IStateLocation, IStateHistory {}
+export interface IStateMatch {
+  match: {
+    [key: string]: any
+  }
+}
+
+export interface IState extends IStateLocation, IStateHistory, IStateMatch {}
